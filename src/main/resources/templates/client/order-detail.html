@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Детали заказа — Служба Такси')}"></head>
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container flex-grow-1 py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">
+                    <i class="bi bi-receipt text-warning me-2"></i>Заказ
+                    #<span th:text="${order.id}">1</span>
+                </h2>
+                <a th:href="@{/client/orders}" class="btn btn-outline-dark">
+                    <i class="bi bi-arrow-left me-1"></i>К заказам
+                </a>
+            </div>
+
+            <!-- Order Info -->
+            <div class="card shadow border-warning mb-4">
+                <div class="card-header bg-dark text-warning">
+                    <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Информация о заказе</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <dl>
+                                <dt class="text-muted">Статус</dt>
+                                <dd>
+                                    <span class="badge fs-6"
+                                          th:classappend="${order.status.name() == 'CREATED'} ? 'bg-primary' :
+                                                          (${order.status.name() == 'ASSIGNED'} ? 'bg-info text-dark' :
+                                                          (${order.status.name() == 'EN_ROUTE'} ? 'bg-warning text-dark' :
+                                                          (${order.status.name() == 'IN_PROGRESS'} ? 'bg-orange' :
+                                                          (${order.status.name() == 'COMPLETED'} ? 'bg-success' :
+                                                          (${order.status.name() == 'CANCELLED'} ? 'bg-danger' : 'bg-secondary')))))"
+                                          th:text="${order.status.name() == 'CREATED'} ? 'Новый' :
+                                                   (${order.status.name() == 'ASSIGNED'} ? 'Назначен' :
+                                                   (${order.status.name() == 'EN_ROUTE'} ? 'В пути к клиенту' :
+                                                   (${order.status.name() == 'IN_PROGRESS'} ? 'Выполняется' :
+                                                   (${order.status.name() == 'COMPLETED'} ? 'Завершён' :
+                                                   (${order.status.name() == 'CANCELLED'} ? 'Отменён' : order.status)))))">
+                                        Статус
+                                    </span>
+                                </dd>
+
+                                <dt class="text-muted">Дата создания</dt>
+                                <dd th:text="${#temporals.format(order.orderTime, 'dd.MM.yyyy HH:mm')}">01.01.2026</dd>
+
+                                <dt class="text-muted">Откуда</dt>
+                                <dd th:text="${order.pickupAddress}">Адрес</dd>
+
+                                <dt class="text-muted">Куда</dt>
+                                <dd th:text="${order.destinationAddress}">Адрес</dd>
+                            </dl>
+                        </div>
+                        <div class="col-md-6">
+                            <dl>
+                                <dt class="text-muted">Расстояние</dt>
+                                <dd>
+                                    <span th:if="${order.distance != null}" th:text="${#numbers.formatDecimal(order.distance, 1, 1)} + ' км'">0 км</span>
+                                    <span th:if="${order.distance == null}" class="text-muted">&mdash;</span>
+                                </dd>
+
+                                <dt class="text-muted">Цена</dt>
+                                <dd>
+                                    <span th:if="${order.price != null}" th:text="${#numbers.formatDecimal(order.price, 1, 2)} + ' ₽'" class="fw-bold fs-5 text-warning">0 ₽</span>
+                                    <span th:if="${order.price == null}" class="text-muted">&mdash;</span>
+                                </dd>
+
+                                <dt class="text-muted">Комментарий</dt>
+                                <dd>
+                                    <span th:if="${order.comment != null and !order.comment.isEmpty()}" th:text="${order.comment}">Комментарий</span>
+                                    <span th:if="${order.comment == null or order.comment.isEmpty()}" class="text-muted">&mdash;</span>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Driver Info -->
+            <div th:if="${order.driver != null}" class="card shadow border-warning mb-4">
+                <div class="card-header bg-dark text-warning">
+                    <h5 class="mb-0"><i class="bi bi-person-badge me-2"></i>Водитель</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4 text-muted">ФИО</dt>
+                        <dd class="col-sm-8" th:text="${order.driver.user.fullName}">Водитель</dd>
+
+                        <dt class="col-sm-4 text-muted">Телефон</dt>
+                        <dd class="col-sm-8" th:text="${order.driver.user.phone}">+7 (999) 000-00-00</dd>
+
+                        <dt class="col-sm-4 text-muted">Рейтинг</dt>
+                        <dd class="col-sm-8">
+                            <span th:if="${order.driver.rating != null}">
+                                <i class="bi bi-star-fill text-warning"></i>
+                                <span th:text="${#numbers.formatDecimal(order.driver.rating, 1, 1)}">4.5</span>
+                            </span>
+                            <span th:if="${order.driver.rating == null}" class="text-muted">&mdash;</span>
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+
+            <!-- Cancel button -->
+            <div th:if="${order.status.name() == 'CREATED'}" class="text-end">
+                <a th:href="@{/client/orders/{id}/cancel(id=${order.id})}"
+                   class="btn btn-danger"
+                   onclick="return confirm('Вы уверены, что хотите отменить заказ?');">
+                    <i class="bi bi-x-circle me-1"></i>Отменить заказ
+                </a>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

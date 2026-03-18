@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Заказы водителя — Служба Такси')}"></head>
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container flex-grow-1 py-4">
+    <h2 class="mb-4"><i class="bi bi-list-ul text-warning me-2"></i>Мои заказы</h2>
+
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-1"></i><span th:text="${success}">Успех</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="table-responsive">
+        <table class="table table-hover table-striped align-middle">
+            <thead class="table-dark">
+            <tr>
+                <th>#</th>
+                <th>Дата</th>
+                <th>Откуда</th>
+                <th>Куда</th>
+                <th>Клиент</th>
+                <th>Статус</th>
+                <th>Расстояние</th>
+                <th>Цена</th>
+                <th>Действия</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="order, iter : ${orders}">
+                <td th:text="${iter.index + 1}">1</td>
+                <td th:text="${#temporals.format(order.orderTime, 'dd.MM.yyyy HH:mm')}">01.01.2026</td>
+                <td th:text="${order.pickupAddress}">Адрес</td>
+                <td th:text="${order.destinationAddress}">Адрес</td>
+                <td>
+                    <span th:if="${order.client != null}" th:text="${order.client.fullName}">Клиент</span>
+                    <span th:if="${order.client == null}" class="text-muted">&mdash;</span>
+                </td>
+                <td>
+                    <span class="badge"
+                          th:classappend="${order.status.name() == 'ASSIGNED'} ? 'bg-info text-dark' :
+                                          (${order.status.name() == 'EN_ROUTE'} ? 'bg-warning text-dark' :
+                                          (${order.status.name() == 'IN_PROGRESS'} ? 'bg-orange' :
+                                          (${order.status.name() == 'COMPLETED'} ? 'bg-success' : 'bg-secondary')))"
+                          th:text="${order.status.name() == 'ASSIGNED'} ? 'Назначен' :
+                                   (${order.status.name() == 'EN_ROUTE'} ? 'В пути к клиенту' :
+                                   (${order.status.name() == 'IN_PROGRESS'} ? 'Выполняется' :
+                                   (${order.status.name() == 'COMPLETED'} ? 'Завершён' : order.status)))">
+                        Статус
+                    </span>
+                </td>
+                <td>
+                    <span th:if="${order.distance != null}" th:text="${#numbers.formatDecimal(order.distance, 1, 1)} + ' км'">0 км</span>
+                    <span th:if="${order.distance == null}" class="text-muted">&mdash;</span>
+                </td>
+                <td>
+                    <span th:if="${order.price != null}" th:text="${#numbers.formatDecimal(order.price, 1, 2)} + ' ₽'" class="fw-bold">0 ₽</span>
+                    <span th:if="${order.price == null}" class="text-muted">&mdash;</span>
+                </td>
+                <td>
+                    <!-- Accept: ASSIGNED -> EN_ROUTE -->
+                    <form th:if="${order.status.name() == 'ASSIGNED'}"
+                          th:action="@{/driver/orders/{id}/status(id=${order.id})}" method="post" class="d-inline">
+                        <input type="hidden" name="action" value="accept"/>
+                        <button type="submit" class="btn btn-sm btn-warning text-dark" title="Принять — выехать к клиенту">
+                            <i class="bi bi-car-front me-1"></i>Выехать
+                        </button>
+                    </form>
+
+                    <!-- EN_ROUTE -> IN_PROGRESS -->
+                    <form th:if="${order.status.name() == 'EN_ROUTE'}"
+                          th:action="@{/driver/orders/{id}/status(id=${order.id})}" method="post" class="d-inline">
+                        <input type="hidden" name="action" value="start"/>
+                        <button type="submit" class="btn btn-sm btn-info text-dark" title="Начать поездку">
+                            <i class="bi bi-play-circle me-1"></i>Начать
+                        </button>
+                    </form>
+
+                    <!-- IN_PROGRESS -> COMPLETED -->
+                    <form th:if="${order.status.name() == 'IN_PROGRESS'}"
+                          th:action="@{/driver/orders/{id}/status(id=${order.id})}" method="post" class="d-inline">
+                        <input type="hidden" name="action" value="complete"/>
+                        <button type="submit" class="btn btn-sm btn-success" title="Завершить поездку">
+                            <i class="bi bi-check-circle me-1"></i>Завершить
+                        </button>
+                    </form>
+
+                    <span th:if="${order.status.name() == 'COMPLETED'}" class="text-muted small">
+                        <i class="bi bi-check-all text-success"></i> Выполнен
+                    </span>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(orders)}">
+                <td colspan="9" class="text-center text-muted py-4">
+                    <i class="bi bi-inbox fs-1 d-block mb-2"></i>Заказов пока нет
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

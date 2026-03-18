@@ -1,0 +1,75 @@
+
+digraph ER {
+    graph [
+        rankdir=LR,
+        bgcolor="white",
+        fontname="Arial",
+        label="",
+        pad=0.5,
+        nodesep=0.8,
+        ranksep=1.5
+    ];
+    node [shape=plaintext, fontname="Arial", fontsize=12];
+    edge [fontname="Arial", fontsize=10, color="#444444"];
+
+    User [label=<
+        <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" BGCOLOR="#E8F4FD" COLOR="#2980B9">
+            <TR><TD COLSPAN="3" BGCOLOR="#2980B9"><FONT COLOR="white"><B>User (Пользователь)</B></FONT></TD></TR>
+            <TR><TD ALIGN="LEFT">🔑</TD><TD ALIGN="LEFT"><B>id</B></TD><TD ALIGN="LEFT">BIGINT PK</TD></TR>
+            <TR><TD ALIGN="LEFT"></TD><TD ALIGN="LEFT">username</TD><TD ALIGN="LEFT">VARCHAR(50) UNIQUE</TD></TR>
+            <TR><TD ALIGN="LEFT"></TD><TD ALIGN="LEFT">password</TD><TD ALIGN="LEFT">VARCHAR(255)</TD></TR>
+            <TR><TD ALIGN="LEFT"></TD><TD ALIGN="LEFT">full_name</TD><TD ALIGN="LEFT">VARCHAR(100)</TD></TR>
+            <TR><TD ALIGN="LEFT"></TD><TD ALIGN="LEFT">phone</TD><TD ALIGN="LEFT">VARCHAR(20)</TD></TR>
+            <TR><TD ALIGN="LEFT"></TD><TD ALIGN="LEFT">email</TD><TD ALIGN="LEFT">VARCHAR(100)</TD></TR>
+            <TR><TD ALIGN="LEFT"></TD><TD ALIGN="LEFT">role</TD><TD ALIGN="LEFT">ENUM(Role)</TD></TR>
+            <TR><TD ALIGN="LEFT"></TD><TD ALIGN="LEFT">active</TD><TD ALIGN="LEFT">BOOLEAN</TD></TR>
+            <TR><TD ALIGN="LEFT"></TD><TD ALIGN="LEFT">created_at</TD><TD ALIGN="LEFT">TIMESTAMP</TD></TR>
+        </TABLE>
+    >];
+
+    Driver [label=<
+        <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" BGCOLOR="#E8F8E8" COLOR="#27AE60">
+            <TR><TD COLSPAN="3" BGCOLOR="#27AE60"><FONT COLOR="white"><B>Driver (Водитель)</B></FONT></TD></TR>
+            <TR><TD ALIGN="LEFT">🔑</TD><TD ALIGN="LEFT"><B>id</B></TD><TD ALIGN="LEFT">BIGINT PK</TD></TR>
+            <TR><TD ALIGN="LEFT">🔗</TD><TD ALIGN="LEFT">user_id</TD><TD ALIGN="LEFT">BIGINT FK → User</TD></TR>
+            <TR><TD ALIGN="LEFT"></TD><TD ALIGN="LEFT">license_number</TD><TD ALIGN="LEFT">VARCHAR(20)</TD></TR>
+            <TR><TD ALIGN="LEFT"></TD><TD ALIGN="LEFT">experience_years</TD><TD ALIGN="LEFT">INT</TD></TR>
+            <TR><TD ALIGN="LEFT"></TD><TD ALIGN="LEFT">rating</TD><TD ALIGN="LEFT">DOUBLE</TD></TR>
+            <TR><TD ALIGN="LEFT"></TD><TD ALIGN="LEFT">available</TD><TD ALIGN="LEFT">BOOLEAN</TD></TR>
+        </TABLE>
+    >];
+
+    Vehicle [label=<
+        <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" BGCOLOR="#FFF8E1" COLOR="#F39C12">
+            <TR><TD COLSPAN="3" BGCOLOR="#F39C12"><FONT COLOR="white"><B>Vehicle (Транспортное средство)</B></FONT></TD></TR>
+            <TR><TD ALIGN="LEFT">🔑</TD><TD ALIGN="LEFT"><B>id</B></TD><TD ALIGN="LEFT">BIGINT PK</TD></TR>
+            <TR><TD ALIGN="LEFT">🔗</TD><TD ALIGN="LEFT">driver_id</TD><TD ALIGN="LEFT">BIGINT FK → Driver</TD></TR>
+            <TR><TD ALIGN="LEFT"></TD><TD ALIGN="LEFT">brand</TD><TD ALIGN="LEFT">VARCHAR(50)</TD></TR>
+            <TR><TD ALIGN="LEFT"></TD><TD ALIGN="LEFT">model</TD><TD ALIGN="LEFT">VARCHAR(50)</TD></TR>
+            <TR><TD ALIGN="LEFT"></TD><TD ALIGN="LEFT">color</TD><TD ALIGN="LEFT">VARCHAR(30)</TD></TR>
+            <TR><TD ALIGN="LEFT"></TD><TD ALIGN="LEFT">license_plate</TD><TD ALIGN="LEFT">VARCHAR(20) UNIQUE</TD></TR>
+            <TR><TD ALIGN="LEFT"></TD><TD ALIGN="LEFT">manufacture_year</TD><TD ALIGN="LEFT">INT</TD></TR>
+        </TABLE>
+    >];
+
+    Order [label=<
+        <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" BGCOLOR="#FDEDEC" COLOR="#E74C3C">
+            <TR><TD COLSPAN="3" BGCOLOR="#E74C3C"><FONT COLOR="white"><B>Order (Заказ)</B></FONT></TD></TR>
+            <TR><TD ALIGN="LEFT">🔑</TD><TD ALIGN="LEFT"><B>id</B></TD><TD ALIGN="LEFT">BIGINT PK</TD></TR>
+            <TR><TD ALIGN="LEFT">🔗</TD><TD ALIGN="LEFT">client_id</TD><TD ALIGN="LEFT">BIGINT FK → User</TD></TR>
+            <TR><TD ALIGN="LEFT">🔗</TD><TD ALIGN="LEFT">driver_id</TD><TD ALIGN="LEFT">BIGINT FK → Driver</TD></TR>
+            <TR><TD ALIGN="LEFT"></TD><TD ALIGN="LEFT">pickup_address</TD><TD ALIGN="LEFT">VARCHAR(255)</TD></TR>
+            <TR><TD ALIGN="LEFT"></TD><TD ALIGN="LEFT">destination_address</TD><TD ALIGN="LEFT">VARCHAR(255)</TD></TR>
+            <TR><TD ALIGN="LEFT"></TD><TD ALIGN="LEFT">distance</TD><TD ALIGN="LEFT">DOUBLE</TD></TR>
+            <TR><TD ALIGN="LEFT"></TD><TD ALIGN="LEFT">price</TD><TD ALIGN="LEFT">DECIMAL</TD></TR>
+            <TR><TD ALIGN="LEFT"></TD><TD ALIGN="LEFT">status</TD><TD ALIGN="LEFT">ENUM(OrderStatus)</TD></TR>
+            <TR><TD ALIGN="LEFT"></TD><TD ALIGN="LEFT">created_at</TD><TD ALIGN="LEFT">TIMESTAMP</TD></TR>
+            <TR><TD ALIGN="LEFT"></TD><TD ALIGN="LEFT">completed_at</TD><TD ALIGN="LEFT">TIMESTAMP</TD></TR>
+        </TABLE>
+    >];
+
+    User -> Driver [label="1 : 0..1\n(профиль водителя)", style=bold, color="#27AE60", penwidth=2];
+    Driver -> Vehicle [label="1 : 0..*\n(транспортные средства)", style=bold, color="#F39C12", penwidth=2];
+    User -> Order [label="1 : 0..*\n(заказы клиента)", style=bold, color="#E74C3C", penwidth=2];
+    Driver -> Order [label="1 : 0..*\n(назначенные заказы)", style=dashed, color="#8E44AD", penwidth=2];
+}

@@ -1,0 +1,137 @@
+
+digraph Architecture {
+    graph [
+        rankdir=TB,
+        bgcolor="white",
+        fontname="Arial",
+        label="",
+        pad=0.5,
+        nodesep=0.6,
+        ranksep=1.0,
+        compound=true
+    ];
+    node [fontname="Arial", fontsize=11, style=filled, penwidth=1.5];
+    edge [fontname="Arial", fontsize=10, penwidth=1.5];
+
+    subgraph cluster_client {
+        label="СЛОЙ КЛИЕНТА (Presentation Layer)";
+        style=rounded;
+        color="#3498DB";
+        bgcolor="#EBF5FB";
+        fontsize=14;
+        fontname="Arial Bold";
+        penwidth=2;
+
+        browser [label="Веб-браузер\n(Chrome, Firefox, Safari)", shape=box, fillcolor="#AED6F1", color="#2980B9"];
+        thymeleaf [label="Thymeleaf\nHTML-шаблоны\n+ Bootstrap 5 CSS", shape=box, fillcolor="#AED6F1", color="#2980B9"];
+        css [label="CSS стили\n(style.css)\nЖёлто-чёрная тема", shape=box, fillcolor="#AED6F1", color="#2980B9"];
+    }
+
+    subgraph cluster_server {
+        label="СЛОЙ СЕРВЕРА (Business Logic Layer)";
+        style=rounded;
+        color="#27AE60";
+        bgcolor="#EAFAF1";
+        fontsize=14;
+        fontname="Arial Bold";
+        penwidth=2;
+
+        subgraph cluster_controllers {
+            label="Контроллеры (Spring MVC)";
+            style=dashed;
+            color="#2ECC71";
+            bgcolor="#D5F5E3";
+            fontsize=12;
+
+            auth [label="AuthController\n/login, /register", shape=component, fillcolor="#82E0AA", color="#27AE60"];
+            client [label="ClientController\n/client/**", shape=component, fillcolor="#82E0AA", color="#27AE60"];
+            driver [label="DriverController\n/driver/**", shape=component, fillcolor="#82E0AA", color="#27AE60"];
+            dispatcher [label="DispatcherController\n/dispatcher/**", shape=component, fillcolor="#82E0AA", color="#27AE60"];
+            admin [label="AdminController\n/admin/**", shape=component, fillcolor="#82E0AA", color="#27AE60"];
+        }
+
+        subgraph cluster_security {
+            label="Безопасность";
+            style=dashed;
+            color="#8E44AD";
+            bgcolor="#F4ECF7";
+            fontsize=12;
+
+            sec [label="Spring Security\nSecurityConfig\nBCrypt + CSRF + Roles", shape=octagon, fillcolor="#D7BDE2", color="#8E44AD"];
+        }
+
+        subgraph cluster_services {
+            label="Сервисы (Business Logic)";
+            style=dashed;
+            color="#2ECC71";
+            bgcolor="#D5F5E3";
+            fontsize=12;
+
+            userSvc [label="UserService", shape=component, fillcolor="#A9DFBF", color="#1E8449"];
+            orderSvc [label="OrderService\n(жизненный цикл заказа,\nрасчёт стоимости)", shape=component, fillcolor="#A9DFBF", color="#1E8449"];
+            driverSvc [label="DriverService", shape=component, fillcolor="#A9DFBF", color="#1E8449"];
+            vehicleSvc [label="VehicleService", shape=component, fillcolor="#A9DFBF", color="#1E8449"];
+            statSvc [label="StatisticsService\n(агрегация данных)", shape=component, fillcolor="#A9DFBF", color="#1E8449"];
+        }
+    }
+
+    subgraph cluster_data {
+        label="СЛОЙ ДАННЫХ (Data Access Layer)";
+        style=rounded;
+        color="#E67E22";
+        bgcolor="#FEF9E7";
+        fontsize=14;
+        fontname="Arial Bold";
+        penwidth=2;
+
+        subgraph cluster_repos {
+            label="Репозитории (Spring Data JPA)";
+            style=dashed;
+            color="#F39C12";
+            bgcolor="#FDEBD0";
+            fontsize=12;
+
+            userRepo [label="UserRepository", shape=component, fillcolor="#F9E79F", color="#F39C12"];
+            orderRepo [label="OrderRepository", shape=component, fillcolor="#F9E79F", color="#F39C12"];
+            driverRepo [label="DriverRepository", shape=component, fillcolor="#F9E79F", color="#F39C12"];
+            vehicleRepo [label="VehicleRepository", shape=component, fillcolor="#F9E79F", color="#F39C12"];
+        }
+
+        orm [label="Hibernate ORM\n(JPA Provider)\nОбъектно-реляционное\nотображение", shape=box3d, fillcolor="#FAD7A0", color="#E67E22"];
+        db [label="База данных\nH2 (dev) / PostgreSQL (prod)\nТаблицы: users, drivers,\nvehicles, orders", shape=cylinder, fillcolor="#F5CBA7", color="#E67E22", width=2.5];
+    }
+
+    // Connections
+    browser -> thymeleaf [label="HTTP\nRequest", color="#3498DB"];
+    thymeleaf -> css [style=dashed, color="#3498DB"];
+    thymeleaf -> sec [label="HTTP\nRequest/Response", color="#3498DB", lhead=cluster_server];
+
+    sec -> auth [color="#8E44AD"];
+    sec -> client [color="#8E44AD"];
+    sec -> driver [color="#8E44AD"];
+    sec -> dispatcher [color="#8E44AD"];
+    sec -> admin [color="#8E44AD"];
+
+    auth -> userSvc [color="#27AE60"];
+    client -> orderSvc [color="#27AE60"];
+    client -> userSvc [color="#27AE60"];
+    driver -> orderSvc [color="#27AE60"];
+    driver -> driverSvc [color="#27AE60"];
+    dispatcher -> orderSvc [color="#27AE60"];
+    dispatcher -> driverSvc [color="#27AE60"];
+    dispatcher -> statSvc [color="#27AE60"];
+    admin -> userSvc [color="#27AE60"];
+    admin -> statSvc [color="#27AE60"];
+
+    userSvc -> userRepo [color="#E67E22"];
+    orderSvc -> orderRepo [color="#E67E22"];
+    driverSvc -> driverRepo [color="#E67E22"];
+    vehicleSvc -> vehicleRepo [color="#E67E22"];
+    statSvc -> orderRepo [color="#E67E22", style=dashed];
+
+    userRepo -> orm [color="#E67E22"];
+    orderRepo -> orm [color="#E67E22"];
+    driverRepo -> orm [color="#E67E22"];
+    vehicleRepo -> orm [color="#E67E22"];
+    orm -> db [label="SQL\nqueries", color="#E67E22", penwidth=2.5];
+}

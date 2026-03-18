@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Вход — Служба Такси')}"></head>
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container flex-grow-1 d-flex align-items-center justify-content-center py-5">
+    <div class="card shadow-lg border-warning" style="max-width: 440px; width: 100%;">
+        <div class="card-header bg-warning text-dark text-center">
+            <h3 class="mb-0"><i class="bi bi-taxi-front-fill me-2"></i>Вход в систему</h3>
+        </div>
+        <div class="card-body p-4">
+
+            <div th:if="${param.error}" class="alert alert-danger" role="alert">
+                <i class="bi bi-exclamation-triangle me-1"></i>Неверное имя пользователя или пароль.
+            </div>
+            <div th:if="${param.logout}" class="alert alert-success" role="alert">
+                <i class="bi bi-check-circle me-1"></i>Вы успешно вышли из системы.
+            </div>
+
+            <form th:action="@{/login}" method="post">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Имя пользователя</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-warning text-dark"><i class="bi bi-person"></i></span>
+                        <input type="text" id="username" name="username"
+                               class="form-control" placeholder="Введите логин" required autofocus/>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Пароль</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-warning text-dark"><i class="bi bi-lock"></i></span>
+                        <input type="password" id="password" name="password"
+                               class="form-control" placeholder="Введите пароль" required/>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-warning w-100 fw-bold text-dark">
+                    <i class="bi bi-box-arrow-in-right me-1"></i>Войти
+                </button>
+            </form>
+
+            <hr/>
+            <p class="text-center mb-0">
+                Нет аккаунта?
+                <a th:href="@{/register}" class="text-warning fw-bold">Зарегистрироваться</a>
+            </p>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Регистрация — Служба Такси')}"></head>
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container flex-grow-1 d-flex align-items-center justify-content-center py-5">
+    <div class="card shadow-lg border-warning" style="max-width: 520px; width: 100%;">
+        <div class="card-header bg-warning text-dark text-center">
+            <h3 class="mb-0"><i class="bi bi-person-plus-fill me-2"></i>Регистрация</h3>
+        </div>
+        <div class="card-body p-4">
+
+            <div th:if="${error}" class="alert alert-danger" role="alert">
+                <i class="bi bi-exclamation-triangle me-1"></i>
+                <span th:text="${error}">Ошибка</span>
+            </div>
+
+            <form th:action="@{/register}" th:object="${user}" method="post" novalidate>
+                <div class="mb-3">
+                    <label for="username" class="form-label">Имя пользователя <span class="text-danger">*</span></label>
+                    <input type="text" id="username" th:field="*{username}"
+                           class="form-control" placeholder="Придумайте логин" required/>
+                    <div th:if="${#fields.hasErrors('username')}" class="text-danger small mt-1"
+                         th:errors="*{username}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label">Пароль <span class="text-danger">*</span></label>
+                    <input type="password" id="password" th:field="*{password}"
+                           class="form-control" placeholder="Придумайте пароль" required/>
+                    <div th:if="${#fields.hasErrors('password')}" class="text-danger small mt-1"
+                         th:errors="*{password}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="fullName" class="form-label">ФИО <span class="text-danger">*</span></label>
+                    <input type="text" id="fullName" th:field="*{fullName}"
+                           class="form-control" placeholder="Иванов Иван Иванович" required/>
+                    <div th:if="${#fields.hasErrors('fullName')}" class="text-danger small mt-1"
+                         th:errors="*{fullName}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="phone" class="form-label">Телефон <span class="text-danger">*</span></label>
+                    <input type="tel" id="phone" th:field="*{phone}"
+                           class="form-control" placeholder="+7 (999) 123-45-67" required/>
+                    <div th:if="${#fields.hasErrors('phone')}" class="text-danger small mt-1"
+                         th:errors="*{phone}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" id="email" th:field="*{email}"
+                           class="form-control" placeholder="example@mail.ru"/>
+                    <div th:if="${#fields.hasErrors('email')}" class="text-danger small mt-1"
+                         th:errors="*{email}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="role" class="form-label">Роль <span class="text-danger">*</span></label>
+                    <select id="role" th:field="*{role}" class="form-select" required>
+                        <option value="">-- Выберите роль --</option>
+                        <option value="CLIENT">Клиент</option>
+                        <option value="DRIVER">Водитель</option>
+                    </select>
+                    <div th:if="${#fields.hasErrors('role')}" class="text-danger small mt-1"
+                         th:errors="*{role}"></div>
+                </div>
+
+                <button type="submit" class="btn btn-warning w-100 fw-bold text-dark">
+                    <i class="bi bi-person-plus me-1"></i>Зарегистрироваться
+                </button>
+            </form>
+
+            <hr/>
+            <p class="text-center mb-0">
+                Уже есть аккаунт?
+                <a th:href="@{/login}" class="text-warning fw-bold">Войти</a>
+            </p>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

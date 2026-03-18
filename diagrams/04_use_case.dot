@@ -1,0 +1,123 @@
+
+digraph UseCase {
+    graph [
+        rankdir=LR,
+        bgcolor="white",
+        fontname="Arial",
+        label="",
+        pad=0.5,
+        nodesep=0.3,
+        ranksep=1.5
+    ];
+    node [fontname="Arial", fontsize=11];
+    edge [fontname="Arial", fontsize=9, color="#555555"];
+
+    // Actors
+    node [shape=none, width=0.8];
+    CLIENT [label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+            <TR><TD FIXEDSIZE="TRUE" WIDTH="30" HEIGHT="50">👤</TD></TR>
+            <TR><TD><B>Клиент</B></TD></TR>
+        </TABLE>
+    >];
+    DRIVER [label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+            <TR><TD FIXEDSIZE="TRUE" WIDTH="30" HEIGHT="50">🚗</TD></TR>
+            <TR><TD><B>Водитель</B></TD></TR>
+        </TABLE>
+    >];
+    DISPATCHER [label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+            <TR><TD FIXEDSIZE="TRUE" WIDTH="30" HEIGHT="50">📋</TD></TR>
+            <TR><TD><B>Диспетчер</B></TD></TR>
+        </TABLE>
+    >];
+    ADMIN [label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+            <TR><TD FIXEDSIZE="TRUE" WIDTH="30" HEIGHT="50">⚙️</TD></TR>
+            <TR><TD><B>Администратор</B></TD></TR>
+        </TABLE>
+    >];
+
+    // System boundary
+    subgraph cluster_system {
+        label="Информационно-справочная система службы такси";
+        style=rounded;
+        color="#2C3E50";
+        bgcolor="#FAFAFA";
+        fontsize=14;
+        penwidth=2;
+
+        // Use cases - shared
+        node [shape=ellipse, style=filled, fillcolor="#EBF5FB", color="#2980B9", penwidth=1.5];
+        UC_LOGIN [label="Авторизация\nв системе"];
+        UC_REGISTER [label="Регистрация\nнового аккаунта"];
+        UC_PROFILE [label="Просмотр и\nредактирование профиля"];
+        UC_ABOUT [label="Просмотр страницы\n«О системе»"];
+
+        // Use cases - client
+        node [fillcolor="#E8F8F5", color="#1ABC9C"];
+        UC_CREATE_ORDER [label="Создание\nнового заказа"];
+        UC_VIEW_ORDERS [label="Просмотр\nсвоих заказов"];
+        UC_CANCEL_ORDER [label="Отмена\nзаказа"];
+
+        // Use cases - driver
+        node [fillcolor="#FEF9E7", color="#F39C12"];
+        UC_VIEW_ASSIGNED [label="Просмотр\nназначенных заказов"];
+        UC_UPDATE_STATUS [label="Изменение статуса\nзаказа"];
+        UC_TOGGLE_AVAIL [label="Переключение\nдоступности"];
+        UC_MANAGE_VEHICLE [label="Управление\nтранспортом"];
+
+        // Use cases - dispatcher
+        node [fillcolor="#F4ECF7", color="#8E44AD"];
+        UC_ALL_ORDERS [label="Управление\nвсеми заказами"];
+        UC_ASSIGN_DRIVER [label="Назначение\nводителя"];
+        UC_VIEW_DRIVERS [label="Просмотр списка\nводителей"];
+        UC_VIEW_CLIENTS [label="Просмотр списка\nклиентов"];
+        UC_STATISTICS [label="Просмотр\nстатистики"];
+
+        // Use cases - admin
+        node [fillcolor="#FDEDEC", color="#E74C3C"];
+        UC_MANAGE_USERS [label="Управление\nпользователями"];
+        UC_CHANGE_ROLES [label="Изменение\nролей"];
+        UC_ADMIN_STATS [label="Статистика\nсистемы"];
+    }
+
+    // Connections - Client
+    CLIENT -> UC_LOGIN;
+    CLIENT -> UC_REGISTER;
+    CLIENT -> UC_PROFILE;
+    CLIENT -> UC_CREATE_ORDER;
+    CLIENT -> UC_VIEW_ORDERS;
+    CLIENT -> UC_CANCEL_ORDER;
+    CLIENT -> UC_ABOUT;
+
+    // Connections - Driver
+    DRIVER -> UC_LOGIN;
+    DRIVER -> UC_PROFILE;
+    DRIVER -> UC_VIEW_ASSIGNED;
+    DRIVER -> UC_UPDATE_STATUS;
+    DRIVER -> UC_TOGGLE_AVAIL;
+    DRIVER -> UC_MANAGE_VEHICLE;
+    DRIVER -> UC_ABOUT;
+
+    // Connections - Dispatcher
+    DISPATCHER -> UC_LOGIN;
+    DISPATCHER -> UC_ALL_ORDERS;
+    DISPATCHER -> UC_ASSIGN_DRIVER;
+    DISPATCHER -> UC_VIEW_DRIVERS;
+    DISPATCHER -> UC_VIEW_CLIENTS;
+    DISPATCHER -> UC_STATISTICS;
+    DISPATCHER -> UC_ABOUT;
+
+    // Connections - Admin
+    ADMIN -> UC_LOGIN;
+    ADMIN -> UC_MANAGE_USERS;
+    ADMIN -> UC_CHANGE_ROLES;
+    ADMIN -> UC_ADMIN_STATS;
+    ADMIN -> UC_ABOUT;
+
+    // Rank hints
+    {rank=same; CLIENT; DRIVER;}
+    {rank=same; DISPATCHER; ADMIN;}
+}

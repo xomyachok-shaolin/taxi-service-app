@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Профиль водителя — Служба Такси')}"></head>
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container flex-grow-1 py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+
+            <h2 class="mb-4"><i class="bi bi-person-badge text-warning me-2"></i>Профиль водителя</h2>
+
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle me-1"></i><span th:text="${success}">Успех</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle me-1"></i><span th:text="${error}">Ошибка</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <!-- Personal Info -->
+            <div class="card shadow border-warning mb-4">
+                <div class="card-header bg-dark text-warning">
+                    <h5 class="mb-0"><i class="bi bi-person me-2"></i>Личные данные</h5>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/driver/profile}" method="post" novalidate>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="username" class="form-label">Имя пользователя</label>
+                                <input type="text" id="username" name="username" th:value="${user.username}"
+                                       class="form-control" readonly/>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="fullName" class="form-label">ФИО <span class="text-danger">*</span></label>
+                                <input type="text" id="fullName" name="fullName" th:value="${user.fullName}"
+                                       class="form-control" required/>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="phone" class="form-label">Телефон <span class="text-danger">*</span></label>
+                                <input type="tel" id="phone" name="phone" th:value="${user.phone}"
+                                       class="form-control" required/>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" id="email" name="email" th:value="${user.email}"
+                                       class="form-control"/>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="licenseNumber" class="form-label">Номер лицензии</label>
+                                <input type="text" id="licenseNumber" name="licenseNumber" th:value="${driver.licenseNumber}"
+                                       class="form-control" placeholder="XX 00 000000"/>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-warning fw-bold text-dark">
+                            <i class="bi bi-save me-1"></i>Сохранить
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Rating & Status -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card shadow border-warning h-100">
+                        <div class="card-body text-center">
+                            <h6 class="text-muted">Рейтинг</h6>
+                            <div class="display-4 text-warning">
+                                <i class="bi bi-star-fill"></i>
+                                <span th:if="${driver.rating != null}" th:text="${#numbers.formatDecimal(driver.rating, 1, 1)}">4.5</span>
+                                <span th:if="${driver.rating == null}">---</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card shadow border-warning h-100">
+                        <div class="card-body text-center">
+                            <h6 class="text-muted">Статус</h6>
+                            <div class="mb-2">
+                                <span th:if="${driver.status == 'AVAILABLE'}" class="badge bg-success fs-6">На линии</span>
+                                <span th:if="${driver.status == 'BUSY'}" class="badge bg-warning text-dark fs-6">Занят</span>
+                                <span th:if="${driver.status == 'OFFLINE'}" class="badge bg-secondary fs-6">Не на линии</span>
+                            </div>
+                            <form th:action="@{/driver/status}" method="post">
+                                <input type="hidden" name="status"
+                                       th:value="${driver.status == 'AVAILABLE'} ? 'OFFLINE' : 'AVAILABLE'"/>
+                                <button type="submit" class="btn btn-sm"
+                                        th:classappend="${driver.status == 'AVAILABLE'} ? 'btn-outline-danger' : 'btn-outline-success'"
+                                        th:text="${driver.status == 'AVAILABLE'} ? 'Уйти с линии' : 'Выйти на линию'">
+                                    Переключить
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vehicles -->
+            <div class="card shadow border-warning">
+                <div class="card-header bg-dark text-warning d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-car-front me-2"></i>Транспортные средства</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                            <tr>
+                                <th>Марка / Модель</th>
+                                <th>Гос. номер</th>
+                                <th>Цвет</th>
+                                <th>Год выпуска</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="vehicle : ${vehicles}">
+                                <td th:text="${vehicle.brand + ' ' + vehicle.model}">Toyota Camry</td>
+                                <td><span class="badge bg-dark" th:text="${vehicle.licensePlate}">A001AA 77</span></td>
+                                <td th:text="${vehicle.color}">Жёлтый</td>
+                                <td th:text="${vehicle.year}">2023</td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(vehicles)}">
+                                <td colspan="4" class="text-center text-muted py-3">
+                                    Транспортные средства не добавлены
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

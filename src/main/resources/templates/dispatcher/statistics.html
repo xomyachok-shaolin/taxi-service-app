@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Статистика — Служба Такси')}"></head>
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container flex-grow-1 py-4">
+    <h2 class="mb-4"><i class="bi bi-bar-chart text-warning me-2"></i>Статистика</h2>
+
+    <!-- Summary Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card shadow border-warning h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-people-fill fs-1 text-warning"></i>
+                    <h6 class="text-muted mt-2">Всего пользователей</h6>
+                    <p class="display-6 fw-bold mb-0" th:text="${totalUsers}">0</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow border-warning h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-receipt fs-1 text-warning"></i>
+                    <h6 class="text-muted mt-2">Всего заказов</h6>
+                    <p class="display-6 fw-bold mb-0" th:text="${totalOrders}">0</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow border-warning h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-clock fs-1 text-warning"></i>
+                    <h6 class="text-muted mt-2">Среднее ожидание</h6>
+                    <p class="display-6 fw-bold mb-0">
+                        <span th:text="${avgWaitTime}">0</span>
+                        <small class="fs-6 text-muted">мин</small>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow border-warning h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-currency-exchange fs-1 text-warning"></i>
+                    <h6 class="text-muted mt-2">Средняя цена</h6>
+                    <p class="display-6 fw-bold mb-0">
+                        <span th:text="${avgPrice}">0</span>
+                        <small class="fs-6 text-muted">₽</small>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="row g-4 mb-4">
+        <!-- Order Status Pie Chart -->
+        <div class="col-md-6">
+            <div class="card shadow border-warning h-100">
+                <div class="card-header bg-dark text-warning">
+                    <h5 class="mb-0"><i class="bi bi-pie-chart me-2"></i>Распределение по статусам</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="statusPieChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders Per Day Bar Chart -->
+        <div class="col-md-6">
+            <div class="card shadow border-warning h-100">
+                <div class="card-header bg-dark text-warning">
+                    <h5 class="mb-0"><i class="bi bi-bar-chart-line me-2"></i>Заказы за последние 7 дней</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="ordersPerDayChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Users by Role Chart -->
+    <div class="row g-4">
+        <div class="col-md-6 mx-auto">
+            <div class="card shadow border-warning">
+                <div class="card-header bg-dark text-warning">
+                    <h5 class="mb-0"><i class="bi bi-people me-2"></i>Пользователи по ролям</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="usersByRoleChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+
+    // --- Order Status Pie Chart ---
+    const statusLabels = /*[[${statusLabels}]]*/ ['Новый','Назначен','В пути','Выполняется','Завершён','Отменён'];
+    const statusCounts = /*[[${statusCounts}]]*/ [5, 3, 2, 4, 20, 1];
+
+    new Chart(document.getElementById('statusPieChart'), {
+        type: 'pie',
+        data: {
+            labels: statusLabels,
+            datasets: [{
+                data: statusCounts,
+                backgroundColor: [
+                    '#0d6efd', '#0dcaf0', '#ffc107', '#fd7e14', '#198754', '#dc3545'
+                ],
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+
+    // --- Orders Per Day Bar Chart ---
+    const dayLabels = /*[[${dayLabels}]]*/ ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+    const dayCounts = /*[[${dayCounts}]]*/ [10, 12, 8, 15, 20, 25, 18];
+
+    new Chart(document.getElementById('ordersPerDayChart'), {
+        type: 'bar',
+        data: {
+            labels: dayLabels,
+            datasets: [{
+                label: 'Заказов',
+                data: dayCounts,
+                backgroundColor: '#ffc107',
+                borderColor: '#212529',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true }
+            },
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+
+    // --- Users by Role Chart ---
+    const roleLabels = /*[[${roleLabels}]]*/ ['Клиенты','Водители','Диспетчеры','Администраторы'];
+    const roleCounts = /*[[${roleCounts}]]*/ [50, 20, 5, 2];
+
+    new Chart(document.getElementById('usersByRoleChart'), {
+        type: 'doughnut',
+        data: {
+            labels: roleLabels,
+            datasets: [{
+                data: roleCounts,
+                backgroundColor: ['#ffc107', '#212529', '#0dcaf0', '#dc3545'],
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+
+    /*]]>*/
+</script>
+</body>
+</html>

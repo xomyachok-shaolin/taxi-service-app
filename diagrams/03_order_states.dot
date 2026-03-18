@@ -1,0 +1,111 @@
+
+digraph OrderStates {
+    graph [
+        rankdir=TB,
+        bgcolor="white",
+        fontname="Arial",
+        label="",
+        pad=0.5,
+        nodesep=0.8,
+        ranksep=1.2
+    ];
+    node [fontname="Arial", fontsize=12, style=filled, penwidth=2];
+    edge [fontname="Arial", fontsize=11, penwidth=2];
+
+    // Start
+    start [label="", shape=circle, fillcolor="black", color="black", width=0.3, height=0.3];
+
+    // States
+    CREATED [
+        label=<
+            <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4">
+                <TR><TD><B>СОЗДАН</B></TD></TR>
+                <TR><TD><FONT POINT-SIZE="10">(CREATED)</FONT></TD></TR>
+                <TR><TD><FONT POINT-SIZE="9" COLOR="#666666">Заказ создан клиентом,<BR/>ожидает назначения водителя</FONT></TD></TR>
+            </TABLE>
+        >,
+        shape=box, style="filled,rounded", fillcolor="#E8F8F5", color="#1ABC9C",
+        width=3
+    ];
+
+    ASSIGNED [
+        label=<
+            <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4">
+                <TR><TD><B>НАЗНАЧЕН</B></TD></TR>
+                <TR><TD><FONT POINT-SIZE="10">(ASSIGNED)</FONT></TD></TR>
+                <TR><TD><FONT POINT-SIZE="9" COLOR="#666666">Водитель назначен,<BR/>готовится к выезду</FONT></TD></TR>
+            </TABLE>
+        >,
+        shape=box, style="filled,rounded", fillcolor="#D4E6F1", color="#2980B9",
+        width=3
+    ];
+
+    EN_ROUTE [
+        label=<
+            <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4">
+                <TR><TD><B>В ПУТИ</B></TD></TR>
+                <TR><TD><FONT POINT-SIZE="10">(EN_ROUTE)</FONT></TD></TR>
+                <TR><TD><FONT POINT-SIZE="9" COLOR="#666666">Водитель едет<BR/>к точке подачи</FONT></TD></TR>
+            </TABLE>
+        >,
+        shape=box, style="filled,rounded", fillcolor="#FEF9E7", color="#F1C40F",
+        width=3
+    ];
+
+    IN_PROGRESS [
+        label=<
+            <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4">
+                <TR><TD><B>ВЫПОЛНЯЕТСЯ</B></TD></TR>
+                <TR><TD><FONT POINT-SIZE="10">(IN_PROGRESS)</FONT></TD></TR>
+                <TR><TD><FONT POINT-SIZE="9" COLOR="#666666">Клиент в машине,<BR/>поездка идёт</FONT></TD></TR>
+            </TABLE>
+        >,
+        shape=box, style="filled,rounded", fillcolor="#FDE8D0", color="#E67E22",
+        width=3
+    ];
+
+    COMPLETED [
+        label=<
+            <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4">
+                <TR><TD><B>ЗАВЕРШЁН</B></TD></TR>
+                <TR><TD><FONT POINT-SIZE="10">(COMPLETED)</FONT></TD></TR>
+                <TR><TD><FONT POINT-SIZE="9" COLOR="#666666">Поездка успешно<BR/>завершена, оплата</FONT></TD></TR>
+            </TABLE>
+        >,
+        shape=box, style="filled,rounded", fillcolor="#D5F5E3", color="#27AE60",
+        width=3
+    ];
+
+    CANCELLED [
+        label=<
+            <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4">
+                <TR><TD><B>ОТМЕНЁН</B></TD></TR>
+                <TR><TD><FONT POINT-SIZE="10">(CANCELLED)</FONT></TD></TR>
+                <TR><TD><FONT POINT-SIZE="9" COLOR="#666666">Заказ отменён<BR/>клиентом или диспетчером</FONT></TD></TR>
+            </TABLE>
+        >,
+        shape=box, style="filled,rounded", fillcolor="#FADBD8", color="#E74C3C",
+        width=3
+    ];
+
+    // End states
+    end_ok [label="", shape=doublecircle, fillcolor="black", color="black", width=0.25];
+    end_cancel [label="", shape=doublecircle, fillcolor="black", color="black", width=0.25];
+
+    // Transitions
+    start -> CREATED [label="  Клиент создаёт заказ  ", color="#1ABC9C"];
+
+    CREATED -> ASSIGNED [label="  Диспетчер назначает\n  водителя  ", color="#2980B9"];
+    CREATED -> CANCELLED [label="Клиент\nотменяет", color="#E74C3C", style=dashed];
+
+    ASSIGNED -> EN_ROUTE [label="  Водитель выезжает  ", color="#F1C40F"];
+    ASSIGNED -> CANCELLED [label="  Отмена  ", color="#E74C3C", style=dashed];
+
+    EN_ROUTE -> IN_PROGRESS [label="  Водитель забрал\n  клиента  ", color="#E67E22"];
+    EN_ROUTE -> CANCELLED [label="  Отмена  ", color="#E74C3C", style=dashed];
+
+    IN_PROGRESS -> COMPLETED [label="  Поездка завершена\n  (фиксация времени и цены)  ", color="#27AE60"];
+
+    COMPLETED -> end_ok [];
+    CANCELLED -> end_cancel [];
+}

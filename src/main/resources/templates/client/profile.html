@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Профиль — Служба Такси')}"></head>
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container flex-grow-1 py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+
+            <div class="card shadow-lg border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h3 class="mb-0"><i class="bi bi-person-circle me-2"></i>Мой профиль</h3>
+                </div>
+                <div class="card-body p-4">
+
+                    <div th:if="${success}" class="alert alert-success" role="alert">
+                        <i class="bi bi-check-circle me-1"></i>
+                        <span th:text="${success}">Профиль обновлён</span>
+                    </div>
+                    <div th:if="${error}" class="alert alert-danger" role="alert">
+                        <i class="bi bi-exclamation-triangle me-1"></i>
+                        <span th:text="${error}">Ошибка</span>
+                    </div>
+
+                    <form th:action="@{/client/profile}" th:object="${user}" method="post" novalidate>
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Имя пользователя</label>
+                            <input type="text" id="username" th:field="*{username}"
+                                   class="form-control" readonly/>
+                            <div class="form-text">Имя пользователя нельзя изменить.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="fullName" class="form-label">ФИО <span class="text-danger">*</span></label>
+                            <input type="text" id="fullName" th:field="*{fullName}"
+                                   class="form-control" required/>
+                            <div th:if="${#fields.hasErrors('fullName')}" class="text-danger small mt-1"
+                                 th:errors="*{fullName}"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Телефон <span class="text-danger">*</span></label>
+                            <input type="tel" id="phone" th:field="*{phone}"
+                                   class="form-control" required/>
+                            <div th:if="${#fields.hasErrors('phone')}" class="text-danger small mt-1"
+                                 th:errors="*{phone}"></div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" id="email" th:field="*{email}"
+                                   class="form-control"/>
+                            <div th:if="${#fields.hasErrors('email')}" class="text-danger small mt-1"
+                                 th:errors="*{email}"></div>
+                        </div>
+
+                        <button type="submit" class="btn btn-warning w-100 fw-bold text-dark">
+                            <i class="bi bi-save me-1"></i>Сохранить изменения
+                        </button>
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

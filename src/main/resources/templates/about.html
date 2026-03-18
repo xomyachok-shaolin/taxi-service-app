@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Об авторе — Служба Такси')}"></head>
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container flex-grow-1 py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+
+            <div class="card shadow-lg border-warning mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h3 class="mb-0"><i class="bi bi-info-circle-fill me-2"></i>Об авторе</h3>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless mb-0">
+                        <tbody>
+                        <tr>
+                            <th class="text-end text-muted" style="width:40%;">ФИО:</th>
+                            <td class="fw-bold">Самощенко Ж.Г.</td>
+                        </tr>
+                        <tr>
+                            <th class="text-end text-muted">Группа:</th>
+                            <td>ДПИ23-2</td>
+                        </tr>
+                        <tr>
+                            <th class="text-end text-muted">Учебное заведение:</th>
+                            <td>Финансовый университет при Правительстве РФ</td>
+                        </tr>
+                        <tr>
+                            <th class="text-end text-muted">Email:</th>
+                            <td><a href="mailto:233264@edu.fa.ru" class="text-warning">233264@edu.fa.ru</a></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card shadow border-warning mb-4">
+                <div class="card-header bg-dark text-warning">
+                    <h5 class="mb-0"><i class="bi bi-code-slash me-2"></i>О проекте</h5>
+                </div>
+                <div class="card-body">
+                    <p>
+                        <strong>Информационно-справочная система службы такси</strong> &mdash;
+                        веб-приложение для автоматизации работы службы такси. Система позволяет
+                        клиентам создавать заказы, водителям принимать и выполнять их, а диспетчерам
+                        и администраторам управлять процессом и просматривать статистику.
+                    </p>
+                    <p class="mb-0">
+                        <strong>Сроки реализации:</strong> 2025&ndash;2026 учебный год.
+                    </p>
+                </div>
+            </div>
+
+            <div class="card shadow border-warning">
+                <div class="card-header bg-dark text-warning">
+                    <h5 class="mb-0"><i class="bi bi-gear-fill me-2"></i>Технологический стек</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-warning">Бэкенд</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="bi bi-check-circle text-warning me-1"></i>Java 17+</li>
+                                <li><i class="bi bi-check-circle text-warning me-1"></i>Spring Boot 3</li>
+                                <li><i class="bi bi-check-circle text-warning me-1"></i>Spring Security</li>
+                                <li><i class="bi bi-check-circle text-warning me-1"></i>Spring Data JPA</li>
+                                <li><i class="bi bi-check-circle text-warning me-1"></i>PostgreSQL</li>
+                                <li><i class="bi bi-check-circle text-warning me-1"></i>Hibernate</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-warning">Фронтенд</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="bi bi-check-circle text-warning me-1"></i>Thymeleaf</li>
+                                <li><i class="bi bi-check-circle text-warning me-1"></i>Bootstrap 5</li>
+                                <li><i class="bi bi-check-circle text-warning me-1"></i>Chart.js</li>
+                                <li><i class="bi bi-check-circle text-warning me-1"></i>HTML5 / CSS3</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

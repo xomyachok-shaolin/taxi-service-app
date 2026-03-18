@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Водители — Служба Такси')}"></head>
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container flex-grow-1 py-4">
+    <h2 class="mb-4"><i class="bi bi-people text-warning me-2"></i>Список водителей</h2>
+
+    <div class="table-responsive">
+        <table class="table table-hover table-striped align-middle">
+            <thead class="table-dark">
+            <tr>
+                <th>#</th>
+                <th>ФИО</th>
+                <th>Телефон</th>
+                <th>Лицензия</th>
+                <th>Рейтинг</th>
+                <th>Статус</th>
+                <th>Транспорт</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="driver, iter : ${drivers}">
+                <td th:text="${iter.index + 1}">1</td>
+                <td th:text="${driver.user.fullName}">Иванов Иван</td>
+                <td th:text="${driver.user.phone}">+7 (999) 000-00-00</td>
+                <td>
+                    <span th:if="${driver.licenseNumber != null}" th:text="${driver.licenseNumber}">XX 00 000000</span>
+                    <span th:if="${driver.licenseNumber == null}" class="text-muted">&mdash;</span>
+                </td>
+                <td>
+                    <span th:if="${driver.rating != null}">
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <span th:text="${#numbers.formatDecimal(driver.rating, 1, 1)}">4.5</span>
+                    </span>
+                    <span th:if="${driver.rating == null}" class="text-muted">&mdash;</span>
+                </td>
+                <td>
+                    <span th:if="${driver.status == 'AVAILABLE'}" class="badge bg-success">На линии</span>
+                    <span th:if="${driver.status == 'BUSY'}" class="badge bg-warning text-dark">Занят</span>
+                    <span th:if="${driver.status == 'OFFLINE'}" class="badge bg-secondary">Не на линии</span>
+                </td>
+                <td>
+                    <span th:if="${!driver.vehicles.isEmpty()}"
+                          th:text="${driver.vehicles[0].brand + ' ' + driver.vehicles[0].model + ' (' + driver.vehicles[0].licensePlate + ')'}">
+                        Toyota Camry (A001AA 77)
+                    </span>
+                    <span th:if="${driver.vehicles.isEmpty()}" class="text-muted">&mdash;</span>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(drivers)}">
+                <td colspan="7" class="text-center text-muted py-4">
+                    <i class="bi bi-inbox fs-1 d-block mb-2"></i>Водители не найдены
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>
